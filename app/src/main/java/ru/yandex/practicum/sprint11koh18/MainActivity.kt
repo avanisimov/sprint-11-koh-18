@@ -3,6 +3,7 @@ package ru.yandex.practicum.sprint11koh18
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.webkit.WebView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -35,7 +36,11 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        // adapter
+
         val uri: Uri = Uri.parse("https://myserver.com:5051/api/v1/path?text=android&take=1#last")
+
+
 
         Log.d(TAG, "uri.scheme ${uri.scheme}")
         Log.d(TAG, "uri.host ${uri.host}")
@@ -56,10 +61,17 @@ class MainActivity : AppCompatActivity() {
                 GsonConverterFactory.create(
                     GsonBuilder()
                         .registerTypeAdapter(Date::class.java, CustomDateTypeAdapter())
+                        .registerTypeAdapter(NewsItem::class.java, NewsItemAdapter())
                         .create()
                 )
             )
             .build()
+        val myClassAClass: Class<MyClassA> = MyClassA::class.java
+        Log.d(TAG, "myClassAClass.fields ${myClassAClass.declaredFields.map { it.name to it.type }}")
+        val newsItemClass: Class<NewsItem> = NewsItem::class.java
+        Log.d(TAG, "newsItemClass.fields ${newsItemClass.declaredFields.map { it.name to it.type }}")
+
+
         val serverApi = retrofit.create(Sprint11ServerApi::class.java)
 
         serverApi.getNews1().enqueue(object : Callback<NewsResponse> {
@@ -79,11 +91,15 @@ class MainActivity : AppCompatActivity() {
 
 }
 
+class MyClassA(
+    val id: String
+)
+
 // https://raw.githubusercontent.com/avanisimov/sprint-11-koh-18/main/jsons/news_1.json
 
 interface Sprint11ServerApi {
 
 
-    @GET("main/jsons/news_1.json")
+    @GET("main/jsons/news_2.json")
     fun getNews1(): Call<NewsResponse>
 }
